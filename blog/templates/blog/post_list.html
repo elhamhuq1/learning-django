@@ -1,0 +1,136 @@
+{% extends "blog/base.html" %} {% block title %}All Blog Posts{% endblock %}
+{%load static %} {% block content %}
+
+<section class="blog-section">
+  <div class="container">
+    <div class="blog-header">
+      <span class="blog-subtitle">Latest Posts</span>
+      <h1 class="blog-title">Explore Recent Articles</h1>
+      <p class="blog-description">
+        Discover insights, stories, and updates from our latest posts
+      </p>
+    </div>
+
+    <div class="posts-grid">
+      {% for post in page_obj %}
+      <article class="post-card">
+        <a href="{{ post.get_absolute_url }}" class="post-link">
+          <div class="post-header">
+            <div class="post-meta">
+              <span class="post-status status-{{ post.status|lower }}"
+                >{{ post.status }}</span
+              >
+              <time
+                class="post-date"
+                datetime="{{ post.timestamp|date:'Y-m-d' }}"
+              >
+                <svg
+                  class="date-icon"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                {{ post.timestamp|date:"M d, Y" }}
+              </time>
+            </div>
+          </div>
+
+          <div class="post-content">
+            <h2 class="post-title">{{ post.title }}</h2>
+            <p class="post-excerpt">{{ post.body|truncatewords:25 }}</p>
+          </div>
+
+          <div class="post-footer">
+            <div class="author-info">
+              <img
+                src="{% static 'images/elham-profile.JPG' %}"
+                alt="{{ post.author }}"
+                class="author-avatar"
+              />
+              <div class="author-details">
+                <span class="author-name">{{ post.author }}</span>
+                <span class="author-role">Writer</span>
+              </div>
+            </div>
+            <div class="read-more">
+              <svg
+                class="arrow-icon"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </div>
+          </div>
+        </a>
+      </article>
+      {% empty %}
+      <div class="no-posts">
+        <p>No posts available at the moment.</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="pagination-nav" aria-label="Blog pagination">
+      <div class="pagination-container">
+        {% if page_obj.has_previous %}
+        <a
+          href="?page={{ page_obj.previous_page_number }}"
+          class="pagination-btn pagination-prev"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Previous
+        </a>
+        {% endif %}
+
+        <span class="pagination-info">
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a
+          href="?page={{ page_obj.next_page_number }}"
+          class="pagination-btn pagination-next"
+        >
+          Next
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </a>
+        {% endif %}
+      </div>
+    </nav>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}
