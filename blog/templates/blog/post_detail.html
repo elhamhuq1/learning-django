@@ -75,6 +75,41 @@
       <div class="post-body">{{ post.body|linebreaks }}</div>
     </div>
 
+    {% if similar_posts %}
+    <div class="similar-posts-section">
+      <h3 class="similar-posts-title">You might also like</h3>
+      <div class="similar-posts-grid">
+        {% for similar_post in similar_posts %}
+        <article class="similar-post-card">
+          <a href="{{ similar_post.get_absolute_url }}" class="similar-post-link">
+            <div class="similar-post-content">
+              <h4 class="similar-post-title">{{ similar_post.title }}</h4>
+              <p class="similar-post-excerpt">{{ similar_post.body|truncatewords:15 }}</p>
+              
+              <div class="similar-post-meta">
+                <time class="similar-post-date">{{ similar_post.timestamp|date:"M d, Y" }}</time>
+                {% if similar_post.tags.all %}
+                <div class="similar-post-tags">
+                  {% for tag in similar_post.tags.all|slice:":3" %}
+                    <span class="similar-tag-badge">{{ tag.name }}</span>
+                  {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            
+            <div class="similar-post-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m9 18 6-6-6-6"/>
+              </svg>
+            </div>
+          </a>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
     <div class="comments-section">
       <div class="comments-header">
         <h3 class="comments-title">Comments ({{ comment_count }})</h3>

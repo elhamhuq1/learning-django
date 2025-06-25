@@ -5,6 +5,7 @@ from .models import Post, Comment
 from .forms import CommentForm
 from django.shortcuts import render
 from django.urls import reverse
+from django.db.models import Count
 
 class PostListView(ListView):
     model = Post
@@ -27,8 +28,33 @@ class PostDetailView(DetailView):
         context['comments'] = comments
         context['comment_form'] = CommentForm()
         context['comment_count'] = comments.count()
+        context['similar_posts'] = self.get_similar_posts(post)
 
         return context
+    
+    def get_similar_posts(self, post):
+        post_tags_ids = post.tags.values_list('id', flat=True)
+
+        if not post_tags_ids:
+            return Post.objects.filter(
+                status='Published'
+            ).exclude(
+                id=post.id
+            ).order_by('-timestamp')[:3]
+        
+        similar_posts = Post.objects.filter(
+            tags__in=post_tags_ids,
+            status='Published'
+        ).exclude(
+            id=post.id
+        ).annotate(
+            shared_tags=Count('tags')
+        ).order_by(
+            '-shared_tags',
+            '-timestamp'
+        ).distinct()[:3]
+
+        return similar_posts
 
 class CommentCreateView(CreateView):
     model = Comment
